@@ -44,6 +44,19 @@ func JudgeDeployment(factory listerfactory.ListerFactory, obj runtime.Object) (r
 			Message: message,
 		}, nil
 	}
+
+	// a replica set when one of its pods fails to be created
+	// due to insufficient quota, limit ranges, pod security policy, node selectors, etc. or deleted
+	// due to kubelet being down or finalizers are failing.
+	rsStatus, err := JudgeReplicaSet(factory, rs)
+	if err != nil {
+		return releaseapi.ResourceStatusFrom(""), err
+	}
+	if rsStatus.Phase == releaseapi.ResourceFailed {
+		return rsStatus, nil
+	}
+
+	// get pods
 	podList, err := getPodsFor(factory.Core().V1().Pods(), deployment)
 	if err != nil {
 		return releaseapi.ResourceStatusFrom(""), err
