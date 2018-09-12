@@ -1,7 +1,7 @@
 package v1
 
 import (
-	"github.com/caicloud/rudder-client/status/internal"
+	"github.com/caicloud/rudder-client/status/universal"
 	corev1 "k8s.io/api/core/v1"
 )
 
@@ -12,7 +12,7 @@ var (
 	gvkPVC       = corev1.SchemeGroupVersion.WithKind("PersistentVolumeClaim")
 )
 
-func Assist(u internal.Umpire) {
+func Assist(u universal.Umpire) {
 	u.Employ(gvkService, JudgeSVC)
 	u.Employ(gvkSecret, JudgeSecret)
 	u.Employ(gvkConfigMap, JudgeConfigmap)

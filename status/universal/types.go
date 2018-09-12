@@ -1,4 +1,4 @@
-package internal
+package universal
 
 import (
 	"github.com/caicloud/clientset/listerfactory"

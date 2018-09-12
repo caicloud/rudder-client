@@ -1,7 +1,7 @@
 package v1
 
 import (
-	"github.com/caicloud/rudder-client/status/internal"
+	"github.com/caicloud/rudder-client/status/universal"
 	appsv1 "k8s.io/api/apps/v1"
 )
 
@@ -12,7 +12,7 @@ var (
 	gvkDaemonSet   = appsv1.SchemeGroupVersion.WithKind("DaemonSet")
 )
 
-func Assist(u internal.Umpire) {
+func Assist(u universal.Umpire) {
 	u.Employ(gvkDeployment, JudgeDeployment)
 	u.Employ(gvkReplicaSet, JudgeReplicaSet)
 	u.Employ(gvkStatefulSet, JudgeStatefulSet)

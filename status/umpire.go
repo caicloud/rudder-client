@@ -10,21 +10,22 @@ import (
 	batchv1 "github.com/caicloud/rudder-client/status/batch/v1"
 	batchv1beta1 "github.com/caicloud/rudder-client/status/batch/v1beta1"
 	corev1 "github.com/caicloud/rudder-client/status/core/v1"
+	"github.com/caicloud/rudder-client/status/universal"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
 type umpire struct {
 	factory    listerfactory.ListerFactory
-	assistants map[schema.GroupVersionKind]Assistant
+	assistants map[schema.GroupVersionKind]universal.Assistant
 	mux        sync.RWMutex
 }
 
 // NewUmpire returns a new status Umpire
-func NewUmpire(factory listerfactory.ListerFactory) Umpire {
+func NewUmpire(factory listerfactory.ListerFactory) universal.Umpire {
 	u := umpire{
 		factory:    factory,
-		assistants: make(map[schema.GroupVersionKind]Assistant),
+		assistants: make(map[schema.GroupVersionKind]universal.Assistant),
 	}
 	u.employ()
 
@@ -39,7 +40,7 @@ func (u *umpire) employ() {
 }
 
 // Employ employs an assistant for specified object kind.
-func (u *umpire) Employ(gvk schema.GroupVersionKind, assistant Assistant) {
+func (u *umpire) Employ(gvk schema.GroupVersionKind, assistant universal.Assistant) {
 	u.mux.Lock()
 	defer u.mux.Unlock()
 	u.assistants[gvk] = assistant
