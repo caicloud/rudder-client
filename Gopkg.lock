@@ -48,7 +48,7 @@
     "pkg/apis/release/v1alpha1",
     "util/status"
   ]
-  revision = "582fe5d0f8e830836c6712f337323945d819c9be"
+  revision = "5732b1d45c172f450e1a714980d97d41e66af7cd"
 
 [[projects]]
   name = "github.com/davecgh/go-spew"
