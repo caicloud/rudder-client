@@ -7,7 +7,6 @@ import (
 	"sort"
 
 	"github.com/caicloud/clientset/listerfactory"
-	listerfactorycorev1 "github.com/caicloud/clientset/listerfactory/core/v1"
 	releaseapi "github.com/caicloud/clientset/pkg/apis/release/v1alpha1"
 	"github.com/caicloud/clientset/util/event"
 	appsv1 "k8s.io/api/apps/v1"
@@ -65,7 +64,7 @@ func JudgeDaemonSet(factory listerfactory.ListerFactory, obj runtime.Object) (re
 		oldPods = append(oldPods, pod)
 	}
 
-	events, err := listerfactorycorev1.NewEventLister(factory.Client()).Events(daemonset.Namespace).List(labels.Everything())
+	events, err := factory.Core().V1().Events().Events(daemonset.Namespace).List(labels.Everything())
 	if err != nil {
 		return releaseapi.ResourceStatusFrom(""), nil
 	}

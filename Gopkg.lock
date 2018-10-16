@@ -3,7 +3,7 @@
 
 [[projects]]
   branch = "release-1.10"
-  digest = "1:efae62c751278f1bc9bce71032b6bfa223aaf8748b04f7759de169caacf1f7aa"
+  digest = "1:01d6766c1edc25d690e3a71929659ec35628b638fb86da00107eb54b7bd073b7"
   name = "github.com/caicloud/clientset"
   packages = [
     "listerfactory",
@@ -51,7 +51,7 @@
     "util/status",
   ]
   pruneopts = "UT"
-  revision = "cc67a396134f4c887fe2aad0c9fed0d629fa50c6"
+  revision = "bf0c81df50c89829fbee4bbed73344a6ab01612e"
 
 [[projects]]
   digest = "1:ffe9824d294da03b391f44e1ae8281281b4afc1bdaa9588c9097785e3af10cec"
