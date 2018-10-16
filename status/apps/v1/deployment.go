@@ -7,7 +7,6 @@ import (
 	"github.com/golang/glog"
 
 	"github.com/caicloud/clientset/listerfactory"
-	listerfactorycorev1 "github.com/caicloud/clientset/listerfactory/core/v1"
 	releaseapi "github.com/caicloud/clientset/pkg/apis/release/v1alpha1"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -78,7 +77,7 @@ func JudgeDeployment(factory listerfactory.ListerFactory, obj runtime.Object) (r
 		}
 	}
 
-	events, err := listerfactorycorev1.NewEventLister(factory.Client()).Events(deployment.Namespace).List(labels.Everything())
+	events, err := factory.Core().V1().Events().Events(deployment.Namespace).List(labels.Everything())
 	if err != nil {
 		return releaseapi.ResourceStatusFrom(""), nil
 	}
