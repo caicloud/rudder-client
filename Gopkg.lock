@@ -3,7 +3,7 @@
 
 [[projects]]
   branch = "release-1.10"
-  digest = "1:01d6766c1edc25d690e3a71929659ec35628b638fb86da00107eb54b7bd073b7"
+  digest = "1:5c7c4b1026d7001dd17dd22ac5147a622bdb7549fb750ddeffea3bf805996ef4"
   name = "github.com/caicloud/clientset"
   packages = [
     "listerfactory",
@@ -51,7 +51,7 @@
     "util/status",
   ]
   pruneopts = "UT"
-  revision = "bf0c81df50c89829fbee4bbed73344a6ab01612e"
+  revision = "be334cae33fd0b891870e67c0f83c1d7d97f6302"
 
 [[projects]]
   digest = "1:ffe9824d294da03b391f44e1ae8281281b4afc1bdaa9588c9097785e3af10cec"
@@ -456,11 +456,9 @@
   analyzer-version = 1
   input-imports = [
     "github.com/caicloud/clientset/listerfactory",
-    "github.com/caicloud/clientset/listerfactory/core/v1",
     "github.com/caicloud/clientset/pkg/apis/release/v1alpha1",
     "github.com/caicloud/clientset/util/event",
     "github.com/caicloud/clientset/util/status",
-    "github.com/golang/glog",
     "k8s.io/api/apps/v1",
     "k8s.io/api/batch/v1",
     "k8s.io/api/batch/v1beta1",
