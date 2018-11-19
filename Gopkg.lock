@@ -3,7 +3,7 @@
 
 [[projects]]
   branch = "release-1.10"
-  digest = "1:5c7c4b1026d7001dd17dd22ac5147a622bdb7549fb750ddeffea3bf805996ef4"
+  digest = "1:18aa7e8eca3401eeb202ba300c482631e01581e5601999958244f3d8b2dae10d"
   name = "github.com/caicloud/clientset"
   packages = [
     "listerfactory",
@@ -51,7 +51,7 @@
     "util/status",
   ]
   pruneopts = "UT"
-  revision = "be334cae33fd0b891870e67c0f83c1d7d97f6302"
+  revision = "ffcd4a2f8b58fd6e79f61a6526322b811e8be294"
 
 [[projects]]
   digest = "1:ffe9824d294da03b391f44e1ae8281281b4afc1bdaa9588c9097785e3af10cec"
@@ -158,24 +158,24 @@
   version = "1.0.1"
 
 [[projects]]
-  digest = "1:dab83a1bbc7ad3d7a6ba1a1cc1760f25ac38cdf7d96a5cdd55cd915a4f5ceaf9"
+  digest = "1:c1b1102241e7f645bc8e0c22ae352e8f0dc6484b6cb4d132fa9f24174e0119e2"
   name = "github.com/spf13/pflag"
   packages = ["."]
   pruneopts = "UT"
-  revision = "9a97c102cda95a86cec2345a6f09f55a939babf5"
-  version = "v1.0.2"
+  revision = "298182f68c66c05229eb03ac171abe6e309ee79a"
+  version = "v1.0.3"
 
 [[projects]]
   branch = "master"
-  digest = "1:3f3a05ae0b95893d90b9b3b5afdb79a9b3d96e4e36e099d841ae602e4aca0da8"
+  digest = "1:38f553aff0273ad6f367cb0a0f8b6eecbaef8dc6cb8b50e57b6a81c1d5b1e332"
   name = "golang.org/x/crypto"
   packages = ["ssh/terminal"]
   pruneopts = "UT"
-  revision = "0709b304e793a5edb4a2c0145f281ecdc20838a4"
+  revision = "505ab145d0a99da450461ae2c1a9f6cd10d1f447"
 
 [[projects]]
   branch = "master"
-  digest = "1:d1209fa9ed40a3a24de8498a9bead59eb3333f16a73fa23ba1fc6677a3cfc9d7"
+  digest = "1:4a92984bfd4eadc04caa0646cda3e4e92ca8a3fe0db6ce16d4401ba86d394a1f"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -185,18 +185,18 @@
     "idna",
   ]
   pruneopts = "UT"
-  revision = "161cd47e91fd58ac17490ef4d742dc98bb4cf60e"
+  revision = "351d144fa1fc0bd934e2408202be0c29f25e35a0"
 
 [[projects]]
   branch = "master"
-  digest = "1:374fc90fcb026e9a367e3fad29e988e5dd944b68ca3f24a184d77abc5307dda4"
+  digest = "1:b9dceb1408ba5105803d5859193bc7d89ac3199b611cf8681dbaa0aa09c10d9c"
   name = "golang.org/x/sys"
   packages = [
     "unix",
     "windows",
   ]
   pruneopts = "UT"
-  revision = "d0be0721c37eeb5299f245a996a483160fc36940"
+  revision = "a5c9d58dba9a56f97aaa86f55e638b718c5a6c42"
 
 [[projects]]
   digest = "1:a2ab62866c75542dd18d2b069fec854577a20211d7c0ea6ae746072a1dccdd18"
@@ -223,11 +223,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:c9e7a4b4d47c0ed205d257648b0e5b0440880cb728506e318f8ac7cd36270bc4"
+  digest = "1:9fdc2b55e8e0fafe4b41884091e51e77344f7dc511c5acedcfd98200003bff90"
   name = "golang.org/x/time"
   packages = ["rate"]
   pruneopts = "UT"
-  revision = "fbb02b2291d28baffd63558aa44b4b56f178d650"
+  revision = "85acf8d2951cb2a3bde7632f9ff273ef0379bcbd"
 
 [[projects]]
   digest = "1:2d1fbdc6777e5408cabeb02bf336305e724b925ff4546ded0fa8715a7267922a"
@@ -238,12 +238,12 @@
   version = "v0.9.1"
 
 [[projects]]
-  digest = "1:342378ac4dcb378a5448dd723f0784ae519383532f5e70ade24132c4c8693202"
+  digest = "1:4d2e5a73dc1500038e504a8d78b986630e3626dc027bc030ba5c75da257cdb96"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
   pruneopts = "UT"
-  revision = "5420a8b6744d3b0345ab293f6fcba19c978f1183"
-  version = "v2.2.1"
+  revision = "51d6538a90f86fe93ac480b35f37b2be17fef232"
+  version = "v2.2.2"
 
 [[projects]]
   digest = "1:cae8f1d1d786aa486a7ed236a8c1f099b3b44697ec6bbb5951d7e9bdb53a5125"
@@ -459,15 +459,22 @@
     "github.com/caicloud/clientset/pkg/apis/release/v1alpha1",
     "github.com/caicloud/clientset/util/event",
     "github.com/caicloud/clientset/util/status",
+    "github.com/davecgh/go-spew/spew",
+    "github.com/golang/glog",
     "k8s.io/api/apps/v1",
+    "k8s.io/api/apps/v1beta1",
+    "k8s.io/api/apps/v1beta2",
     "k8s.io/api/batch/v1",
     "k8s.io/api/batch/v1beta1",
     "k8s.io/api/core/v1",
+    "k8s.io/api/extensions/v1beta1",
     "k8s.io/apimachinery/pkg/api/equality",
     "k8s.io/apimachinery/pkg/apis/meta/v1",
+    "k8s.io/apimachinery/pkg/apis/meta/v1/unstructured",
     "k8s.io/apimachinery/pkg/labels",
     "k8s.io/apimachinery/pkg/runtime",
     "k8s.io/apimachinery/pkg/runtime/schema",
+    "k8s.io/apimachinery/pkg/util/intstr",
     "k8s.io/client-go/listers/apps/v1",
     "k8s.io/client-go/listers/batch/v1",
     "k8s.io/client-go/listers/core/v1",
