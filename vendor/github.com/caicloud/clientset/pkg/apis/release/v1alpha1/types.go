@@ -23,6 +23,9 @@ type ReleaseSpec struct {
 	Template []byte `json:"template,omitempty"`
 	// Config is the config for parsing template
 	Config string `json:"config,omitempty"`
+	// This flag tells the controller to suspend deployment, statefulset and cronjob.
+	// This flag can not worked on job or daemonset.
+	Suspend *bool `json:"suspend,omitempty"`
 	// The config this release is rolling back to. Will be cleared after rollback is done.
 	RollbackTo *ReleaseRollbackConfig `json:"rollbackTo,omitempty"`
 }
@@ -61,6 +64,10 @@ type ReleaseDetailStatus struct {
 	// Resources contains a kind-counter map.
 	// A kind should be a unique name of a group resources.
 	Resources map[string]ResourceCounter `json:"resources,omitempty"`
+	// Reason for record the failed reason.
+	Reason string `json:"reason,omitempty"`
+	// Human readable message indicating details about the failure.
+	Message string `json:"message,omitempty"`
 }
 
 // ResourceCounter is a status counter
