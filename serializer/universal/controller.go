@@ -45,6 +45,8 @@ func MergeTwoControllers(src, dst *Controller) error {
 	if dst == nil || src == nil {
 		return fmt.Errorf("both of input controlllers must not nil")
 	}
+
+	dst.Type = src.Type
 	dst.Controller = src.Controller
 	dst.Pod = src.Pod
 	dst.Schedule = src.Schedule

@@ -13,7 +13,8 @@ type Pod struct {
 	Host            PodHost                   `json:"host"`
 	HostAliases     []corev1.HostAlias        `json:"hostAliases,omitempty"`
 	SecurityContext corev1.PodSecurityContext `json:"securityContext"`
-	Annotations     map[string]string         `json:"annotations,omitempty`
+	Annotations     map[string]string         `json:"annotations,omitempty"`
+	ConsleIsMonitor *bool                     `json:"__isMonitor,omitempty"`
 }
 
 type PodHost struct {
@@ -34,7 +35,13 @@ func GetPod(tmpl corev1.PodTemplateSpec) *Pod {
 			PID:     tmpl.Spec.HostPID,
 			IPC:     tmpl.Spec.HostIPC,
 		},
-		HostAliases: tmpl.Spec.HostAliases,
-		Annotations: tmpl.Annotations,
+		HostAliases:     tmpl.Spec.HostAliases,
+		Annotations:     tmpl.Annotations,
+		ConsleIsMonitor: getConsleIsMonitor(tmpl),
 	}
+}
+
+func getConsleIsMonitor(tmpl corev1.PodTemplateSpec) *bool {
+	ret := true
+	return &ret
 }

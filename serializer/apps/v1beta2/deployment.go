@@ -15,22 +15,22 @@ import (
 
 type deploymentSerializer struct{}
 
-func (d *deploymentSerializer) Encode(obj runtime.Object, chart string, cur int) (string, error) {
+func (d *deploymentSerializer) Encode(obj runtime.Object, chart string, cur int) (string, string, error) {
 	chconfig, err := universal.PrepareChartConfig(chart, cur)
 	if err != nil {
 		glog.Error(err)
-		return "", err
+		return "", "", err
 	}
 	dp, err := convertObjectToDeploy(obj)
 	if err != nil {
 		glog.Errorf("convertObjectToDeploy error: %v", err)
-		return "", err
+		return "", "", err
 	}
 	glog.Infof("apps.v1beta2.Deployment: %s", spew.Sdump(dp))
 	controller, err := convertDeployToController(dp)
 	if err != nil {
 		glog.Errorf("convertDeployToController error: %v", err)
-		return "", err
+		return "", "", err
 	}
 	glog.Infof("Deployment Controller Config: %s", spew.Sdump(controller))
 	if chconfig.Config.Controllers[cur] == nil {
@@ -38,14 +38,14 @@ func (d *deploymentSerializer) Encode(obj runtime.Object, chart string, cur int)
 	}
 	err = universal.MergeTwoControllers(controller, chconfig.Config.Controllers[cur])
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 	glog.Infof("chart config: %s", spew.Sdump(chconfig.Config))
 	chconfigBytes, err := json.Marshal(chconfig)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
-	return string(chconfigBytes), nil
+	return string(chconfigBytes), dp.Name, nil
 }
 
 func convertObjectToDeploy(obj runtime.Object) (*appsv1beta1.Deployment, error) {
@@ -76,27 +76,21 @@ func convertDeployToController(dp *appsv1beta1.Deployment) (*universal.Controlle
 	tmpl := dp.Spec.Template
 
 	controller := &universal.Deployment{
-		Replica: spec.Replicas,
-		Strategy: universal.Strategy{
-			Type: string(spec.Strategy.Type),
-		},
-	}
-	if spec.Strategy.RollingUpdate != nil {
-		controller.Strategy.Unavailable = spec.Strategy.RollingUpdate.MaxUnavailable
-		controller.Strategy.Surge = spec.Strategy.RollingUpdate.MaxSurge
+		Replica:  spec.Replicas,
+		Strategy: convertDeployStrategy(dp.Spec.Strategy),
 	}
 
 	pod := universal.GetPod(tmpl)
-	initContainers := universal.GetContainers(tmpl.Spec.InitContainers)
-	containers := universal.GetContainers((tmpl.Spec.Containers))
-	schedule, err := universal.GetSchedule(tmpl.Spec)
-	if err != nil {
-		glog.Errorf("universal.GetSchedule error: %v", err)
-		return nil, err
-	}
 	volumes, err := universal.GetVolumes(tmpl.Spec.Volumes)
 	if err != nil {
 		glog.Errorf("universal.GetVolumes error: %v", err)
+		return nil, err
+	}
+	initContainers := universal.GetContainers(tmpl.Spec.InitContainers, volumes)
+	containers := universal.GetContainers(tmpl.Spec.Containers, volumes)
+	schedule, err := universal.GetSchedule(tmpl.Spec)
+	if err != nil {
+		glog.Errorf("universal.GetSchedule error: %v", err)
 		return nil, err
 	}
 
@@ -109,4 +103,20 @@ func convertDeployToController(dp *appsv1beta1.Deployment) (*universal.Controlle
 		Containers:     containers,
 		Volumes:        volumes,
 	}, nil
+}
+
+func convertDeployStrategy(dpStrategy appsv1beta1.DeploymentStrategy) universal.Strategy {
+	ret := universal.Strategy{
+		Type: string(dpStrategy.Type),
+	}
+	if dpStrategy.Type == "" {
+		ret.Type = string(appsv1beta1.RollingUpdateDeploymentStrategyType)
+	}
+
+	if dpStrategy.RollingUpdate != nil {
+		ret.Unavailable = dpStrategy.RollingUpdate.MaxUnavailable
+		ret.Surge = dpStrategy.RollingUpdate.MaxSurge
+	}
+
+	return ret
 }

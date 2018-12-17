@@ -1,6 +1,7 @@
 package serializer
 
 import (
+	"flag"
 	"fmt"
 	"sync"
 
@@ -13,6 +14,11 @@ import (
 	extensionsv1beta1 "github.com/caicloud/rudder-client/serializer/extensions/v1beta1"
 	"github.com/caicloud/rudder-client/serializer/universal"
 )
+
+func init() {
+	flag.Set("logtostderr", "true")
+	flag.Set("alsologtostderr", "true")
+}
 
 type serializerFactory struct {
 	mux         sync.RWMutex

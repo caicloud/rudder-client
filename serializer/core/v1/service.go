@@ -21,23 +21,23 @@ type Service struct {
 
 type serviceSerializer struct{}
 
-func (s *serviceSerializer) Encode(obj runtime.Object, chart string, cur int) (string, error) {
+func (s *serviceSerializer) Encode(obj runtime.Object, chart string, cur int) (string, string, error) {
 	chconfig, err := universal.PrepareChartConfig(chart, cur)
 	if err != nil {
 		glog.Error(err)
-		return "", err
+		return "", "", err
 	}
 	svc, err := convertObjectToSerivce(obj)
 	if err != nil {
 		glog.Errorf("convertObjectToSerivce error: %v", err)
-		return "", err
+		return "", "", err
 	}
 
 	glog.Infof("core.v1.Service: %s", svc.String())
 	usvc, err := ConvertServiceToController(svc)
 	if err != nil {
 		glog.Errorf("ConvertServiceToController error: %v", err)
-		return "", err
+		return "", "", err
 	}
 	glog.Infof("Service Config: %s", spew.Sdump(usvc))
 	if chconfig.Config.Controllers[cur].Services == nil {
@@ -47,9 +47,9 @@ func (s *serviceSerializer) Encode(obj runtime.Object, chart string, cur int) (s
 	glog.Infof("chart chconfig.Config: %s", spew.Sdump(chconfig.Config))
 	chconfigBytes, err := json.Marshal(chconfig)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
-	return string(chconfigBytes), nil
+	return string(chconfigBytes), svc.Name, nil
 }
 
 func convertObjectToSerivce(obj runtime.Object) (*corev1.Service, error) {
