@@ -8,6 +8,131 @@ import (
 	corev1 "k8s.io/api/core/v1"
 )
 
+type Volume struct {
+	ConsoleKind string       `json:"__kind,omitempty"`
+	Name        string       `json:"name"`
+	VolumeType  string       `json:"type"`
+	Source      VolumeSource `json:"source,omitempty"`
+}
+
+// =================================================================================================
+
+type VolumeSource interface {
+	GetType() string
+	GetConsoleKind() string
+}
+
+// =================================================================================================
+
+type DedicatedVolume struct {
+	Class  string   `json:"class"`
+	Models []string `json:"models"`
+}
+
+func (v *DedicatedVolume) GetType() string {
+	return "Dedicated"
+}
+
+func (v *DedicatedVolume) GetConsoleKind() string {
+	return ""
+}
+
+// =================================================================================================
+
+type StaticVolume struct {
+	Target   string `json:"target"`
+	ReadOnly bool   `json:"readonly"`
+}
+
+func (v *StaticVolume) GetType() string {
+	return "Static"
+}
+
+func (v *StaticVolume) GetConsoleKind() string {
+	return ""
+}
+
+// =================================================================================================
+
+type ScratchVolume struct {
+	Medium corev1.StorageMedium `json:"medium"`
+}
+
+func (v *ScratchVolume) GetType() string {
+	return "Scratch"
+}
+
+func (v *ScratchVolume) GetConsoleKind() string {
+	return ""
+}
+
+// =================================================================================================
+
+type ConfigMapVolume struct {
+	Target      string             `json:"target"`
+	Items       []corev1.KeyToPath `json:"items"`
+	DefaultMode *int32             `json:"default"`
+	Optional    *bool              `json:"optional"`
+}
+
+func (v *ConfigMapVolume) GetType() string {
+	return "Config"
+}
+
+func (v *ConfigMapVolume) GetConsoleKind() string {
+	return "config"
+}
+
+// =================================================================================================
+
+type SecretVolume ConfigMapVolume
+
+func (v *SecretVolume) GetType() string {
+	return "Secret"
+}
+
+func (v *SecretVolume) GetConsoleKind() string {
+	return ""
+}
+
+// =================================================================================================
+
+type HostPathVolume struct {
+	Path string `json:"path"`
+}
+
+func (v *HostPathVolume) GetType() string {
+	return "HostPath"
+}
+
+func (v *HostPathVolume) GetConsoleKind() string {
+	return ""
+}
+
+// =================================================================================================
+
+type GlusterfsVolume struct {
+	Endpoints string `json:"endpoints"`
+	Path      string `json:"path"`
+	Readonly  bool   `json:"readonly"`
+}
+
+func (v *GlusterfsVolume) GetType() string {
+	return "Glusterfs"
+}
+
+func (v *GlusterfsVolume) GetConsoleKind() string {
+	return ""
+}
+
+// =================================================================================================
+
+// type NFSVolume struct{}
+
+// type CephVolume struct{}
+
+// =================================================================================================
+
 func GetVolumes(volumes []corev1.Volume) ([]*Volume, error) {
 	ret := make([]*Volume, 0, len(volumes))
 	for _, vol := range volumes {
@@ -16,9 +141,13 @@ func GetVolumes(volumes []corev1.Volume) ([]*Volume, error) {
 			glog.Errorf("get %s 's volume source error: %s", vol.Name, err)
 			return nil, err
 		}
+		typ := vs.GetType()
+		ckind := vs.GetConsoleKind()
 		ret = append(ret, &Volume{
-			Name:   vol.Name,
-			Source: vs,
+			Name:        vol.Name,
+			VolumeType:  typ,
+			ConsoleKind: ckind,
+			Source:      vs,
 		})
 	}
 	return ret, nil
@@ -70,79 +199,3 @@ func getVolumeSource(vs corev1.VolumeSource) (VolumeSource, error) {
 		return nil, fmt.Errorf("not support the volume %s", vs.String())
 	}
 }
-
-// =================================================================================================
-
-type Volume struct {
-	Name   string       `json:"name"`
-	Source VolumeSource `json:"source"`
-}
-
-type VolumeSource interface {
-	GetType() string
-}
-
-type DedicatedVolume struct {
-	Class  string   `json:"class"`
-	Models []string `json:"models"`
-}
-
-func (v *DedicatedVolume) GetType() string {
-	return "Dedicated"
-}
-
-type StaticVolume struct {
-	Target   string `json:"target"`
-	ReadOnly bool   `json:"readonly"`
-}
-
-func (v *StaticVolume) GetType() string {
-	return "Static"
-}
-
-type ScratchVolume struct {
-	Medium corev1.StorageMedium `json:"medium"`
-}
-
-func (v *ScratchVolume) GetType() string {
-	return "Scratch"
-}
-
-type ConfigMapVolume struct {
-	Target      string             `json:"target"`
-	Items       []corev1.KeyToPath `json:"items"`
-	DefaultMode *int32             `json:"default"`
-	Optional    *bool              `json:"optional"`
-}
-
-func (v *ConfigMapVolume) GetType() string {
-	return "ConfigMap"
-}
-
-type SecretVolume ConfigMapVolume
-
-func (v *SecretVolume) GetType() string {
-	return "Secret"
-}
-
-type HostPathVolume struct {
-	Path string `json:"path"`
-}
-
-func (v *HostPathVolume) GetType() string {
-	return "HostPath"
-}
-
-type GlusterfsVolume struct {
-	Endpoints string `json:"endpoints"`
-	Path      string `json:"path"`
-	Readonly  bool   `json:"readonly"`
-}
-
-func (v *GlusterfsVolume) GetType() string {
-	return "Glusterfs"
-}
-
-// type NFSVolume struct{}
-
-// type CephVolume struct{}

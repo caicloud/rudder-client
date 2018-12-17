@@ -6,7 +6,7 @@ import (
 )
 
 type Serializer interface {
-	Encode(obj runtime.Object, chart string, cur int) (string, error)
+	Encode(obj runtime.Object, chart string, cur int) (string, string, error)
 }
 
 type SerializerFactory interface {
