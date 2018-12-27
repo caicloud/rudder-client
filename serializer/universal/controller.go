@@ -7,14 +7,14 @@ import (
 )
 
 type Controller struct {
-	Type           string           `json:"type"`
-	Controller     ControllerConfig `json:"controller"`
-	Pod            *Pod             `json:"pod"`
-	Schedule       *Schedule        `json:"schedule,omitempty"`
-	InitContainers []*Container     `json:"initContainers,omitempty"`
-	Containers     []*Container     `json:"containers"`
-	Volumes        []*Volume        `json:"volumes,omitempty"`
-	Services       []*Service       `json:"services,omitempty"`
+	Type           string       `json:"type"`
+	Controller     interface{}  `json:"controller"`
+	Pod            *Pod         `json:"pod"`
+	Schedule       *Schedule    `json:"schedule,omitempty"`
+	InitContainers []*Container `json:"initContainers,omitempty"`
+	Containers     []*Container `json:"containers"`
+	Volumes        []*Volume    `json:"volumes,omitempty"`
+	Services       []*Service   `json:"services,omitempty"`
 }
 
 type ControllerConfig interface {
@@ -52,5 +52,6 @@ func MergeTwoControllers(src, dst *Controller) error {
 	dst.Schedule = src.Schedule
 	dst.InitContainers = src.InitContainers
 	dst.Containers = src.Containers
+	dst.Volumes = src.Volumes
 	return nil
 }

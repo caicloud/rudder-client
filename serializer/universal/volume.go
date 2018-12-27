@@ -9,10 +9,10 @@ import (
 )
 
 type Volume struct {
-	ConsoleKind string       `json:"__kind,omitempty"`
-	Name        string       `json:"name"`
-	VolumeType  string       `json:"type"`
-	Source      VolumeSource `json:"source,omitempty"`
+	ConsoleKind string      `json:"__kind,omitempty"`
+	Name        string      `json:"name"`
+	VolumeType  string      `json:"type"`
+	Source      interface{} `json:"source,omitempty"`
 }
 
 // =================================================================================================

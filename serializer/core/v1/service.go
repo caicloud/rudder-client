@@ -22,6 +22,7 @@ type Service struct {
 type serviceSerializer struct{}
 
 func (s *serviceSerializer) Encode(obj runtime.Object, chart string, cur int) (string, string, error) {
+	glog.Infof("%s", chart)
 	chconfig, err := universal.PrepareChartConfig(chart, cur)
 	if err != nil {
 		glog.Error(err)
@@ -76,8 +77,12 @@ func convertObjectToSerivce(obj runtime.Object) (*corev1.Service, error) {
 }
 
 func ConvertServiceToController(svc *corev1.Service) (*universal.Service, error) {
+	typ := svc.Spec.Type
+	if string(typ) == "" {
+		typ = corev1.ServiceTypeClusterIP
+	}
 	return &universal.Service{
-		Type:  svc.Spec.Type,
+		Type:  typ,
 		Name:  svc.Name,
 		Ports: svc.Spec.Ports,
 	}, nil
