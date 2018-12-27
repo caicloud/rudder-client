@@ -86,8 +86,8 @@ func convertDeployToController(dp *appsv1beta1.Deployment) (*universal.Controlle
 		glog.Errorf("universal.GetVolumes error: %v", err)
 		return nil, err
 	}
-	initContainers := universal.GetContainers(tmpl.Spec.InitContainers, volumes)
-	containers := universal.GetContainers(tmpl.Spec.Containers, volumes)
+	initContainers := universal.GetContainers(pod, tmpl.Spec.InitContainers, volumes)
+	containers := universal.GetContainers(pod, tmpl.Spec.Containers, volumes)
 	schedule, err := universal.GetSchedule(tmpl.Spec)
 	if err != nil {
 		glog.Errorf("universal.GetSchedule error: %v", err)
