@@ -26,7 +26,7 @@
 
 
 [[constraint]]
-  branch = "release-1.10"
+  branch = "release-1.12"
   name = "github.com/caicloud/clientset"
 
 [[constraint]]
@@ -35,15 +35,15 @@
 
 [[constraint]]
   name = "k8s.io/api"
-  version = "kubernetes-1.10.0"
+  version = "kubernetes-1.12.3"
 
 [[constraint]]
   name = "k8s.io/apimachinery"
-  version = "kubernetes-1.10.0"
+  version = "kubernetes-1.12.3"
 
 [[constraint]]
   name = "k8s.io/client-go"
-  version = "=v7.0.0"
+  version = "=v9.0.0"
 
 [prune]
   go-tests = true
