@@ -45,6 +45,10 @@
   name = "k8s.io/client-go"
   version = "=v9.0.0"
 
+[[constraint]]
+  name = "github.com/davecgh/go-spew"
+  version = "=v1.1.1"
+
 [prune]
   go-tests = true
   unused-packages = true
