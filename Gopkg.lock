@@ -55,15 +55,15 @@
     "util/status",
   ]
   pruneopts = "UT"
-  revision = "71376b5fb5cd3888d68f34b5862e28d647730109"
+  revision = "4871013d8051e06b0c7257170e7f531cfb29e314"
 
 [[projects]]
-  digest = "1:ffe9824d294da03b391f44e1ae8281281b4afc1bdaa9588c9097785e3af10cec"
+  digest = "1:a2c1d0e43bd3baaa071d1b9ed72c27d78169b2b269f71c105ac4ba34b1be4a39"
   name = "github.com/davecgh/go-spew"
   packages = ["spew"]
   pruneopts = "UT"
-  revision = "8991bc29aa16c548c550c7ff78260e27b9ab7c73"
-  version = "v1.1.1"
+  revision = "346938d642f2ec3594ed81d874461961cd0faa76"
+  version = "v1.1.0"
 
 [[projects]]
   digest = "1:2cd7915ab26ede7d95b8749e6b1f933f1c6d5398030684e6505940a10f31cfda"
@@ -523,8 +523,8 @@
     "util/retry",
   ]
   pruneopts = "UT"
-  revision = "1638f8970cefaa404ff3a62950f88b08292b2696"
-  version = "v9.0.0"
+  revision = "d082d5923d3cc0bfbb066ee5fbdea3d0ca79acf8"
+  version = "kubernetes-1.12.3"
 
 [solve-meta]
   analyzer-name = "dep"
