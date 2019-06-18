@@ -60,12 +60,12 @@ func convertObjectToDeploy(obj runtime.Object) (*appsv1.Deployment, error) {
 	glog.Infof("unstructured object gvk: %s", ungvk)
 	data, err := un.MarshalJSON()
 	if err != nil {
-		glog.Errorf("unstructured object: %s %s MarshalJSON error: %v", un.GetName(), err)
+		glog.Errorf("unstructured object: %s MarshalJSON error: %v", un.GetName(), err)
 		return nil, err
 	}
 	err = json.Unmarshal(data, dp)
 	if err != nil {
-		glog.Errorf("unstructured object: %s %s Unmarshal to Deployment error: %v", un.GetName(), err)
+		glog.Errorf("unstructured object: %s Unmarshal to Deployment error: %v", un.GetName(), err)
 		return nil, err
 	}
 	return dp, nil
