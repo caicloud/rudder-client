@@ -21,7 +21,7 @@ type Service struct {
 
 type serviceSerializer struct{}
 
-func (s *serviceSerializer) Encode(obj runtime.Object, chart string, cur int) (string, string, error) {
+func (s *serviceSerializer) Encode(obj runtime.Object, chart string, cur int, fn func(runtime.Object) (runtime.Object, error)) (string, string, error) {
 	glog.Infof("%s", chart)
 	chconfig, err := universal.PrepareChartConfig(chart, cur)
 	if err != nil {
