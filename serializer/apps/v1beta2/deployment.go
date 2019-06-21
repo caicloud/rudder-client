@@ -15,7 +15,7 @@ import (
 
 type deploymentSerializer struct{}
 
-func (d *deploymentSerializer) Encode(obj runtime.Object, chart string, cur int) (string, string, error) {
+func (d *deploymentSerializer) Encode(obj runtime.Object, chart string, cur int, fn func(runtime.Object) (runtime.Object, error)) (string, string, error) {
 	chconfig, err := universal.PrepareChartConfig(chart, cur)
 	if err != nil {
 		glog.Error(err)

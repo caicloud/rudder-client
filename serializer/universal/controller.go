@@ -23,6 +23,19 @@ type ControllerConfig interface {
 
 // =================================================================================================
 
+type DaemonSet struct {
+	Strategy Strategy `json:"strategy,omitempty"`
+	Name     string   `json:"name"`
+}
+
+func (d *DaemonSet) GetControllerType() string {
+	return "DaemonSet"
+}
+
+// =================================================================================================
+
+// =================================================================================================
+
 type Deployment struct {
 	Replica  *int32   `json:"replica,omitempty"`
 	Strategy Strategy `json:"strategy,omitempty"`
