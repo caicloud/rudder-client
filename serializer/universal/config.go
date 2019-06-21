@@ -51,19 +51,18 @@ func PrepareChartConfig(chart string, cur int) (*ChartConfig, error) {
 	switch {
 	case config.Controllers == nil || len(config.Controllers) == 0:
 		config.Controllers = make([]*Controller, cur+1)
-		glog.Infof("controllers are empty, which will be appended %d empty elements", cur+1)
-		glog.Infof("the object will be encoded in controllers[%d]", cur)
+		glog.V(4).Infof("controllers are empty, which will be appended %d empty elements", cur+1)
+		glog.V(4).Infof("the object will be encoded in controllers[%d]", cur)
 	case len(config.Controllers) < cur+1:
-		glog.Infof("controllers length: %d", len(config.Controllers))
+		glog.V(4).Infof("controllers length: %d", len(config.Controllers))
 		tmp := make([]*Controller, cur+1-len(config.Controllers))
 		config.Controllers = append(config.Controllers, tmp...)
-		glog.Infof("controllers will be appended by %d empty elements, the new controllers length: %d", len(tmp), cur+1)
-		glog.Infof("controllers[%d] is zero value struct, the object config will be encoded in it", cur)
+		glog.V(4).Infof("controllers will be appended by %d empty elements, the new controllers length: %d", len(tmp), cur+1)
+		glog.V(4).Infof("controllers[%d] is zero value struct, the object config will be encoded in it", cur)
 	default:
-		glog.Infof("controllers[%d] will be modified, the object config will be encoded in it", cur)
-		glog.Infof("controllers[%d]'s original config: %s", cur, spew.Sdump(config.Controllers[cur]))
+		glog.V(4).Infof("controllers[%d] will be modified, the object config will be encoded in it", cur)
+		glog.V(4).Infof("controllers[%d]'s original config: %s", cur, spew.Sdump(config.Controllers[cur]))
 	}
 	chconfig.Config = config
-
 	return chconfig, nil
 }

@@ -8,8 +8,11 @@ import (
 
 var (
 	gvkDeployment = appsv1.SchemeGroupVersion.WithKind("Deployment")
+	gvkDaemonSet  = appsv1.SchemeGroupVersion.WithKind("DaemonSet")
 )
 
+// Register register workloads
 func Register(p universal.SerializerFactory) {
 	p.Register(gvkDeployment, &deploymentSerializer{})
+	p.Register(gvkDaemonSet, &daemonSetSerializer{})
 }

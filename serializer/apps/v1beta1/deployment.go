@@ -15,7 +15,7 @@ import (
 
 type deploymentSerializer struct{}
 
-func (d *deploymentSerializer) Encode(obj runtime.Object, chart string, cur int) (string, string, error) {
+func (d *deploymentSerializer) Encode(obj runtime.Object, chart string, cur int, fn func(runtime.Object) (runtime.Object, error)) (string, string, error) {
 	chconfig, err := universal.PrepareChartConfig(chart, cur)
 	if err != nil {
 		glog.Error(err)
@@ -24,6 +24,34 @@ func (d *deploymentSerializer) Encode(obj runtime.Object, chart string, cur int)
 	dp, err := convertObjectToDeploy(obj)
 	if err != nil {
 		glog.Errorf("convertObjectToDeploy error: %v", err)
+		return "", "", err
+	}
+	glog.V(4).Infof("apps.v1.Deployment: %s", spew.Sdump(dp))
+	controller, err := convertDeployToController(dp)
+	if err != nil {
+		glog.Errorf("convertDeployToController error: %v", err)
+		return "", "", err
+	}
+	glog.Infof("Deployment Controller Config: %s", spew.Sdump(controller))
+	if chconfig.Config.Controllers[cur] == nil {
+		chconfig.Config.Controllers[cur] = new(universal.Controller)
+	}
+	err = universal.MergeTwoControllers(controller, chconfig.Config.Controllers[cur])
+	if err != nil {
+		return "", "", err
+	}
+	glog.V(4).Infof("chart config: %s", spew.Sdump(chconfig.Config))
+	chconfigBytes, err := json.Marshal(chconfig)
+	if err != nil {
+		return "", "", err
+	}
+	return string(chconfigBytes), dp.Name, nil
+}
+
+func (d *deploymentSerializer) EncodeObj(dp *appsv1beta1.Deployment, chart string, cur int) (string, string, error) {
+	chconfig, err := universal.PrepareChartConfig(chart, cur)
+	if err != nil {
+		glog.Error(err)
 		return "", "", err
 	}
 	glog.Infof("apps.v1.Deployment: %s", spew.Sdump(dp))
