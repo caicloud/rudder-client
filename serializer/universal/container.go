@@ -15,9 +15,9 @@ type Container struct {
 	Args               []string                    `json:"args"`
 	WorkingDir         string                      `json:"workingDir,omitempty"`
 	SecurityContext    *corev1.SecurityContext     `json:"securityContext,omitempty"`
-	Ports              []corev1.ContainerPort      `json:"ports,omitempty"`
-	Env                []corev1.EnvVar             `json:"env,omitempty"`
+	Ports              []ContainerPort             `json:"ports,omitempty"`
 	EnvFrom            []EnvFrom                   `json:"envFrom,omitempty"`
+	Env                []Env                       `json:"env,omitempty"`
 	Resources          corev1.ResourceRequirements `json:"resources"`
 	Mounts             []VolumeMount               `json:"mounts,omitempty"`
 	Probe              *ContainerProbe             `json:"probe,omitempty"`
@@ -29,6 +29,16 @@ type Container struct {
 	ConsoleIsLog       *bool                       `json:"__isLog,omitempty"`
 	ConsoleLiveness    *bool                       `json:"__liveness,omitempty"`
 	ConsoleReadiness   *bool                       `json:"__readiness,omitempty"`
+}
+
+type ContainerPort struct {
+	Protocol      corev1.Protocol `json:"protocol"`
+	ContainerPort int32           `json:"port"`
+}
+
+type Env struct {
+	Name  string `json:"name"`
+	Value string `json:"value"`
 }
 
 type EnvFrom struct {
@@ -88,9 +98,9 @@ func GetContainers(pod *Pod, containers []corev1.Container, volumes []*Volume) [
 			Args:               c.Args,
 			WorkingDir:         c.WorkingDir,
 			SecurityContext:    c.SecurityContext,
-			Ports:              c.Ports,
 			EnvFrom:            convertEnvFrom(c.EnvFrom),
-			Env:                c.Env,
+			Env:                convertEnv(c.Env),
+			Ports:              convertPort(c.Ports),
 			Resources:          c.Resources,
 			Mounts:             vmounts,
 			Probe:              convertContainerProbe(c.LivenessProbe, c.ReadinessProbe),
@@ -130,6 +140,29 @@ func convertVolumeMounts(vmounts []corev1.VolumeMount, volumes []*Volume) []Volu
 }
 
 // =================================================================================================
+
+func convertPort(in []corev1.ContainerPort) []ContainerPort {
+	out := make([]ContainerPort, len(in))
+	for i, v := range in {
+		out[i].ContainerPort = v.ContainerPort
+		out[i].Protocol = v.Protocol
+	}
+	return out
+}
+
+func convertEnv(env []corev1.EnvVar) []Env {
+	out := make([]Env, 0)
+	for _, v := range env {
+		if v.ValueFrom != nil {
+			continue
+		}
+		out = append(out, Env{
+			Name:  v.Name,
+			Value: v.Value,
+		})
+	}
+	return out
+}
 
 func convertEnvFrom(envFrom []corev1.EnvFromSource) []EnvFrom {
 	if len(envFrom) == 0 {
