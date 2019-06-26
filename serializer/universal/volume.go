@@ -158,14 +158,14 @@ func GetVolumes(volumes []corev1.Volume) ([]*Volume, error) {
 func getVolumeSource(vs corev1.VolumeSource) (VolumeSource, error) {
 	switch {
 	case vs.HostPath != nil:
-		if vs.HostPath.Type != nil {
-			return nil, fmt.Errorf("%s", "not support specify hostPath type")
-		}
+		//if vs.HostPath.Type != nil {
+		//	return nil, fmt.Errorf("%s", "not support specify hostPath type")
+		//}
 		return &HostPathVolume{Path: vs.HostPath.Path}, nil
 	case vs.EmptyDir != nil:
-		if vs.EmptyDir.SizeLimit != nil {
-			return nil, fmt.Errorf("%s", "not support specify emptyDir SizeLimit")
-		}
+		//if vs.EmptyDir.SizeLimit != nil {
+		//	return nil, fmt.Errorf("%s", "not support specify emptyDir SizeLimit")
+		//}
 		return &ScratchVolume{Medium: vs.EmptyDir.Medium}, nil
 	case vs.Secret != nil:
 		return &SecretVolume{
