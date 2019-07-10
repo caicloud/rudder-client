@@ -17,7 +17,7 @@ var (
 // LongRunning ...
 type LongRunning interface {
 	// PredictRevision predicts longRunning resourceStatus from events
-	PredictEvents(events []*corev1.Event) *releaseapi.ResourceStatus
+	PredictEvents(events []*corev1.Event) (*releaseapi.ResourceStatus, *corev1.Event)
 	// UpdatedRevision returns the updated revision and key
 	PredictUpdatedRevision(factory listerfactory.ListerFactory, events []*corev1.Event) (resourceStatus *releaseapi.ResourceStatus, err error)
 	// IsUpdatedPod checks if the pod is updated
