@@ -87,7 +87,7 @@ func (d *daemonsetLongRunning) IsUpdatedPod(pod *corev1.Pod) bool {
 	return IsUpdatedPodOfDaemonSet(pod, hash, generation)
 }
 
-func (d *daemonsetLongRunning) PredictEvents(events []*corev1.Event) *releaseapi.ResourceStatus {
+func (d *daemonsetLongRunning) PredictEvents(events []*corev1.Event) (*releaseapi.ResourceStatus, *corev1.Event) {
 	lastEvent := getLatestEventFor(d.daemonset.GroupVersionKind().Kind, d.daemonset, events)
 	for _, c := range dsetErrorEventCases {
 		if c.Match(lastEvent) {
@@ -95,10 +95,10 @@ func (d *daemonsetLongRunning) PredictEvents(events []*corev1.Event) *releaseapi
 				Phase:   releaseapi.ResourceFailed,
 				Reason:  lastEvent.Reason,
 				Message: lastEvent.Message,
-			}
+			}, lastEvent
 		}
 	}
-	return nil
+	return nil, lastEvent
 }
 
 func (d *daemonsetLongRunning) DesiredReplics() int32 {

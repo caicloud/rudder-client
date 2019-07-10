@@ -85,8 +85,8 @@ func (d *deploymentLongRunning) IsUpdatedPod(pod *corev1.Pod) bool {
 	return latest
 }
 
-func (d *deploymentLongRunning) PredictEvents(events []*corev1.Event) *releaseapi.ResourceStatus {
-	return nil
+func (d *deploymentLongRunning) PredictEvents(events []*corev1.Event) (*releaseapi.ResourceStatus, *corev1.Event) {
+	return nil, nil
 }
 
 func (d *deploymentLongRunning) DesiredReplics() int32 {
