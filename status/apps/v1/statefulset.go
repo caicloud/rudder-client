@@ -64,7 +64,7 @@ func (d *statefulsetLongRunning) IsUpdatedPod(pod *corev1.Pod) bool {
 	return getLabel(pod, appsv1.StatefulSetRevisionLabel) == d.updatedRevision
 }
 
-func (d *statefulsetLongRunning) PredictEvents(events []*corev1.Event) *releaseapi.ResourceStatus {
+func (d *statefulsetLongRunning) PredictEvents(events []*corev1.Event) (*releaseapi.ResourceStatus, *corev1.Event) {
 	lastEvent := getLatestEventFor(d.statefulset.GroupVersionKind().Kind, d.statefulset, events)
 	for _, c := range dsetErrorEventCases {
 		if c.Match(lastEvent) {
@@ -72,10 +72,10 @@ func (d *statefulsetLongRunning) PredictEvents(events []*corev1.Event) *releasea
 				Phase:   releaseapi.ResourceFailed,
 				Reason:  lastEvent.Reason,
 				Message: lastEvent.Message,
-			}
+			}, lastEvent
 		}
 	}
-	return nil
+	return nil, lastEvent
 }
 
 func (d *statefulsetLongRunning) DesiredReplics() int32 {
