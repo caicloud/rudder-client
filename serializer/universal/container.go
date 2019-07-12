@@ -250,17 +250,16 @@ func getConsoleIsCommand(c *corev1.Container) *bool {
 	return convertBoolToPointer(c.Command != nil && len(c.Command) != 0)
 }
 
-// get container console flag from pod annotation
-func getConsoleIsLog(pod *Pod, cn string) *bool {
-	for _, anno := range pod.Annotations {
+// getConsoleIsLog gets container console flag from pod annotation
+func getConsoleIsLog(p *Pod, containerName string) *bool {
+	for _, anno := range p.Annotations {
 		if anno.Key == annotationLogFilesKey {
 			// the log file annotation is like this:
 			// logging.caicloud.io/required-logfiles: '{"files":[{"filename":"sda","logDir":"/he","container":"c0"}]}'
-			// so we don't need unmarshal the string
-			// if we can find the key format such as below, we can judge the flag
-			key := fmt.Sprintf(`"container":"%s"`, cn)
+			// we can judge the flag by the key format such as below
 			value, ok := anno.Value.(string)
 			if ok {
+				key := fmt.Sprintf(`"container":"%s"`, containerName)
 				index := strings.Index(value, key)
 				if index != -1 {
 					return convertBoolToPointer(true)
