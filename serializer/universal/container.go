@@ -1,10 +1,15 @@
 package universal
 
 import (
+	"fmt"
+	"strings"
+
 	"github.com/golang/glog"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
 )
+
+const annotationLogFilesKey = "logging.caicloud.io/required-logfiles"
 
 type Container struct {
 	Name               string                      `json:"name"`
@@ -109,7 +114,7 @@ func GetContainers(pod *Pod, containers []corev1.Container, volumes []*Volume) [
 			ConsoleIsEnvFrom:   getConsoleIsEnvFrom(&c),
 			ConsoleIsCommand:   getConsoleIsCommand(&c),
 			ConsoleIsMountFile: getConsoleIsMountFile(vmounts),
-			ConsoleIsLog:       getConsoleIsLog(pod),
+			ConsoleIsLog:       getConsoleIsLog(pod, c.Name),
 			ConsoleLiveness:    getConsoleLiveness(&c),
 			ConsoleReadiness:   getConsoleReadiness(&c),
 		}
@@ -245,10 +250,23 @@ func getConsoleIsCommand(c *corev1.Container) *bool {
 	return convertBoolToPointer(c.Command != nil && len(c.Command) != 0)
 }
 
-func getConsoleIsLog(pod *Pod) *bool {
+// get container console flag from pod annotation
+func getConsoleIsLog(pod *Pod, cn string) *bool {
 	for _, anno := range pod.Annotations {
-		if anno.Key == "logging.caicloud.io/required-logfiles" {
-			return convertBoolToPointer(true)
+		if anno.Key == annotationLogFilesKey {
+			// the log file annotation is like this:
+			// logging.caicloud.io/required-logfiles: '{"files":[{"filename":"sda","logDir":"/he","container":"c0"}]}'
+			// so we don't need unmarshal the string
+			// if we can find the key format such as below, we can judge the flag
+			key := fmt.Sprintf(`"container":"%s"`, cn)
+			value, ok := anno.Value.(string)
+			if ok {
+				index := strings.Index(value, key)
+				if index != -1 {
+					return convertBoolToPointer(true)
+				}
+			}
+			break
 		}
 	}
 	return convertBoolToPointer(false)
