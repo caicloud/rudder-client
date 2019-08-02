@@ -51,7 +51,7 @@ func newLongRunning(factory listerfactory.ListerFactory, obj runtime.Object) (*l
 func (d *longRunning) Judge() (resStatus releaseapi.ResourceStatus, retErr error) {
 	// predicts resource status from events
 	// remain it util we get PodStatistics
-	predictEventsIssue, _ := d.delegate.PredictEvents(d.events)
+	predictEventsIssue, lastEvent := d.delegate.PredictEvents(d.events)
 
 	// predicts resource status from updated revision and get updated revision key
 	predictRevisionIssue, err := d.delegate.PredictUpdatedRevision(d.factory, d.events)
@@ -76,6 +76,18 @@ func (d *longRunning) Judge() (resStatus releaseapi.ResourceStatus, retErr error
 	// judge status from pods
 	judgeFromPods := d.judge(d.delegate.DesiredReplics(), updated, old)
 
+	// If replicas of daemonset is zero, check event issue and revision issue
+	// bacause daemonset's replicas should not be zero.
+	if len(updated)+len(old) == 0 && lastEvent != nil && lastEvent.InvolvedObject.Kind == "DaemonSet" &&
+		judgeFromPods.Phase != releaseapi.ResourceRunning {
+		if predictEventsIssue != nil {
+			return *predictEventsIssue, nil
+		}
+
+		if predictRevisionIssue != nil {
+			return *predictRevisionIssue, nil
+		}
+	}
 	switch judgeFromPods.Phase {
 	case releaseapi.ResourceProgressing, releaseapi.ResourceUpdating:
 		if predictEventsIssue != nil {
