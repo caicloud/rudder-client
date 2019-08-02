@@ -26,7 +26,7 @@ type Container struct {
 	Resources          corev1.ResourceRequirements `json:"resources"`
 	Mounts             []VolumeMount               `json:"mounts,omitempty"`
 	Probe              *ContainerProbe             `json:"probe,omitempty"`
-	Lifecycle          *corev1.Lifecycle           `json:"lifecycle,omitempty"`
+	Lifecycle          *Lifecycle                  `json:"lifecycle,omitempty"`
 	ConsoleIsEnvCustom *bool                       `json:"__isEnvCustom,omitempty"`
 	ConsoleIsEnvFrom   *bool                       `json:"__isEnvFrom,omitempty"`
 	ConsoleIsCommand   *bool                       `json:"__isCommand,omitempty"`
@@ -34,6 +34,19 @@ type Container struct {
 	ConsoleIsLog       *bool                       `json:"__isLog,omitempty"`
 	ConsoleLiveness    *bool                       `json:"__liveness,omitempty"`
 	ConsoleReadiness   *bool                       `json:"__readiness,omitempty"`
+}
+
+// Lifecycle describes actions that the management system should take in response to container lifecycle
+// events. For the PostStart and PreStop lifecycle handlers, management of the container blocks
+// until the action is complete, unless the container process fails, in which case the handler is aborted.
+type Lifecycle struct {
+	// PostStart is called immediately after a container is created. If the handler fails,
+	// the container is terminated and restarted according to its restart policy.
+	PostStart *Handler `json:"postStart,omitempty"`
+	// PreStop is called immediately before a container is terminated due to an
+	// API request or management event such as liveness probe failure,
+	// preemption, resource contention, etc.
+	PreStop *Handler `json:"preStop,omitempty"`
 }
 
 type ContainerPort struct {
@@ -109,7 +122,7 @@ func GetContainers(pod *Pod, containers []corev1.Container, volumes []*Volume) [
 			Resources:          c.Resources,
 			Mounts:             vmounts,
 			Probe:              convertContainerProbe(c.LivenessProbe, c.ReadinessProbe),
-			Lifecycle:          c.Lifecycle,
+			Lifecycle:          convertLifecycle(c.Lifecycle),
 			ConsoleIsEnvCustom: getConsoleIsEnvCustom(&c),
 			ConsoleIsEnvFrom:   getConsoleIsEnvFrom(&c),
 			ConsoleIsCommand:   getConsoleIsCommand(&c),
@@ -209,6 +222,22 @@ func convertProbe(probe *corev1.Probe) *Probe {
 			FailureThreshold: probe.FailureThreshold,
 		},
 	}
+}
+
+func convertLifecycle(l *corev1.Lifecycle) *Lifecycle {
+	if l == nil {
+		return nil
+	}
+	ret := &Lifecycle{}
+	if l.PreStop != nil {
+		ps := convertHandler(*l.PreStop)
+		ret.PreStop = &ps
+	}
+	if l.PostStart != nil {
+		ps := convertHandler(*l.PostStart)
+		ret.PostStart = &ps
+	}
+	return ret
 }
 
 func convertHandler(handler corev1.Handler) Handler {
