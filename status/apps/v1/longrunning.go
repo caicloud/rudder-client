@@ -76,11 +76,10 @@ func (d *longRunning) Judge() (resStatus releaseapi.ResourceStatus, retErr error
 	// judge status from pods
 	judgeFromPods := d.judge(d.delegate.DesiredReplics(), updated, old)
 
-	// If replicas of daemonset is zero, should check event issue and revision issue
-	// bacause of daemonset's replicas should not be zero.
-	if lastEvent != nil && lastEvent.InvolvedObject.Kind == "DaemonSet" &&
-		judgeFromPods.Phase != releaseapi.ResourceRunning &&
-		len(updated)+len(old) == 0 {
+	// If replicas of daemonset is zero, check event issue and revision issue
+	// bacause daemonset's replicas should not be zero.
+	if len(updated)+len(old) == 0 && lastEvent != nil && lastEvent.InvolvedObject.Kind == "DaemonSet" &&
+		judgeFromPods.Phase != releaseapi.ResourceRunning {
 		if predictEventsIssue != nil {
 			return *predictEventsIssue, nil
 		}
