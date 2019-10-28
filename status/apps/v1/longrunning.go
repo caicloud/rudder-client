@@ -6,6 +6,7 @@ import (
 	"github.com/caicloud/clientset/listerfactory"
 	releaseapi "github.com/caicloud/clientset/pkg/apis/release/v1alpha1"
 	podstatus "github.com/caicloud/clientset/util/status"
+
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/labels"
@@ -36,7 +37,7 @@ func newLongRunning(factory listerfactory.ListerFactory, obj runtime.Object) (*l
 		return nil, fmt.Errorf("unsupported type for %v", resource)
 	}
 
-	events, err := factory.Core().V1().Events().Events(namespace).List(labels.Everything())
+	events, err := factory.Core().V1().Events().Events(namespace).List(labels.Everything()) // TODO: 一次性？只有new时候的events？
 	if err != nil {
 		return nil, err
 	}
@@ -60,7 +61,7 @@ func (d *longRunning) Judge() (resStatus releaseapi.ResourceStatus, retErr error
 	}
 
 	// we should get pod statistics before returning predict revision status
-	// separate pods inte updated and old
+	// separate pods into updated and old
 	updated, old, err := d.Pods()
 	if err != nil {
 		return releaseapi.ResourceStatusFrom(""), err
@@ -78,7 +79,8 @@ func (d *longRunning) Judge() (resStatus releaseapi.ResourceStatus, retErr error
 
 	// If replicas of daemonset is zero, check event issue and revision issue
 	// bacause daemonset's replicas should not be zero.
-	if len(updated)+len(old) == 0 && lastEvent != nil && lastEvent.InvolvedObject.Kind == "DaemonSet" &&
+	if len(updated)+len(old) == 0 && lastEvent != nil &&
+		lastEvent.InvolvedObject.Kind == "DaemonSet" &&
 		judgeFromPods.Phase != releaseapi.ResourceRunning {
 		if predictEventsIssue != nil {
 			return *predictEventsIssue, nil

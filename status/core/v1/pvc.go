@@ -5,12 +5,13 @@ import (
 
 	"github.com/caicloud/clientset/listerfactory"
 	releaseapi "github.com/caicloud/clientset/pkg/apis/release/v1alpha1"
+
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 func JudgePVC(factory listerfactory.ListerFactory, obj runtime.Object) (releaseapi.ResourceStatus, error) {
-	pvc, ok := obj.(*corev1.PersistentVolumeClaim)
+	pvc, ok := obj.(*corev1.PersistentVolumeClaim) // TODO: 为什么只有PVC需要类型断言？
 	if !ok {
 		return releaseapi.ResourceStatusFrom(""), fmt.Errorf("unknown type for persistent volume claim: %s", obj.GetObjectKind().GroupVersionKind().String())
 	}

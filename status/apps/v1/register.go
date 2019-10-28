@@ -2,11 +2,12 @@ package v1
 
 import (
 	"github.com/caicloud/rudder-client/status/universal"
+
 	appsv1 "k8s.io/api/apps/v1"
 )
 
 var (
-	gvkDeployment  = appsv1.SchemeGroupVersion.WithKind("Deployment")
+	gvkDeployment  = appsv1.SchemeGroupVersion.WithKind("Deployment") // TODO: use go-common/cluster/cache/types.go中的ResourceType
 	gvkStatefulSet = appsv1.SchemeGroupVersion.WithKind("StatefulSet")
 	gvkDaemonSet   = appsv1.SchemeGroupVersion.WithKind("DaemonSet")
 )

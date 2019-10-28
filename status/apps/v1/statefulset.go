@@ -6,6 +6,7 @@ import (
 	"github.com/caicloud/clientset/listerfactory"
 	releaseapi "github.com/caicloud/clientset/pkg/apis/release/v1alpha1"
 	"github.com/caicloud/clientset/util/event"
+
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -41,8 +42,7 @@ type statefulsetLongRunning struct {
 
 func newStatefulSetLongRunning(statefulset *appsv1.StatefulSet) LongRunning {
 	return &statefulsetLongRunning{
-		statefulset:     statefulset,
-		updatedRevision: "",
+		statefulset: statefulset,
 	}
 }
 

@@ -2,6 +2,7 @@ package v1beta1
 
 import (
 	"github.com/caicloud/rudder-client/status/universal"
+
 	batchv1beta1 "k8s.io/api/batch/v1beta1"
 )
 
