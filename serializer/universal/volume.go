@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/golang/glog"
-
 	corev1 "k8s.io/api/core/v1"
 )
 

@@ -1,9 +1,9 @@
 package v1
 
 import (
-	appsv1 "k8s.io/api/apps/v1"
-
 	"github.com/caicloud/rudder-client/serializer/universal"
+
+	appsv1 "k8s.io/api/apps/v1"
 )
 
 var (
