@@ -140,7 +140,7 @@ func GetContainers(pod *Pod, containers []corev1.Container, volumes []*Volume) [
 
 func convertVolumeMounts(vmounts []corev1.VolumeMount, volumes []*Volume) []VolumeMount {
 	vmap := make(map[string]*Volume)
-	for c, _ := range volumes {
+	for c := range volumes {
 		vmap[volumes[c].Name] = volumes[c]
 	}
 	ret := make([]VolumeMount, 0, len(vmounts))

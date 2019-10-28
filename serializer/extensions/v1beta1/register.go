@@ -1,9 +1,9 @@
 package v1beta1
 
 import (
-	extensionsv1beta1 "k8s.io/api/extensions/v1beta1"
-
 	"github.com/caicloud/rudder-client/serializer/universal"
+
+	extensionsv1beta1 "k8s.io/api/extensions/v1beta1"
 )
 
 var (

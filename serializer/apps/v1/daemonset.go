@@ -71,12 +71,12 @@ func convertObjectToDaemonSet(obj runtime.Object, fn func(runtime.Object) (runti
 	glog.V(4).Infof("unstructured object gvk: %s", ungvk)
 	data, err := un.MarshalJSON()
 	if err != nil {
-		glog.Errorf("unstructured object: %s %s MarshalJSON error: %v", un.GetName(), err)
+		glog.Errorf("unstructured object: %s MarshalJSON error: %v", un.GetName(), err)
 		return nil, err
 	}
 	err = json.Unmarshal(data, daemon)
 	if err != nil {
-		glog.Errorf("unstructured object: %s %s Unmarshal to Deployment error: %v", un.GetName(), err)
+		glog.Errorf("unstructured object: %s Unmarshal to Deployment error: %v", un.GetName(), err)
 		return nil, err
 	}
 	return daemon, nil

@@ -34,8 +34,6 @@ func (d *DaemonSet) GetControllerType() string {
 
 // =================================================================================================
 
-// =================================================================================================
-
 type Deployment struct {
 	Replica  *int32   `json:"replica,omitempty"`
 	Strategy Strategy `json:"strategy,omitempty"`
