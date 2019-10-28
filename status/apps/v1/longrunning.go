@@ -37,7 +37,7 @@ func newLongRunning(factory listerfactory.ListerFactory, obj runtime.Object) (*l
 		return nil, fmt.Errorf("unsupported type for %v", resource)
 	}
 
-	events, err := factory.Core().V1().Events().Events(namespace).List(labels.Everything()) // TODO: 一次性？只有new时候的events？
+	events, err := factory.Core().V1().Events().Events(namespace).List(labels.Everything())
 	if err != nil {
 		return nil, err
 	}
