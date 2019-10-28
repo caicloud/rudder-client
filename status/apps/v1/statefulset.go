@@ -66,7 +66,7 @@ func (d *statefulsetLongRunning) IsUpdatedPod(pod *corev1.Pod) bool {
 
 func (d *statefulsetLongRunning) PredictEvents(events []*corev1.Event) (*releaseapi.ResourceStatus, *corev1.Event) {
 	lastEvent := getLatestEventFor(d.statefulset.GroupVersionKind().Kind, d.statefulset, events)
-	for _, c := range dsetErrorEventCases {
+	for _, c := range ssetErrorEventCases {
 		if c.Match(lastEvent) {
 			return &releaseapi.ResourceStatus{
 				Phase:   releaseapi.ResourceFailed,
