@@ -188,7 +188,8 @@ func getTemplateGeneration(ds *appsv1.DaemonSet) (*int64, error) {
 func isUpdatedPodOfDaemonSet(pod *corev1.Pod, hash string, dsTemplateGeneration *int64) bool {
 	// Compare with hash to see if the pod is updated, need to maintain backward compatibility of templateGeneration
 	templateMatches := dsTemplateGeneration != nil &&
-		pod.Labels[extensions.DaemonSetTemplateGenerationKey] == fmt.Sprint(dsTemplateGeneration) // TODO: deprecated key
+		// TODO: deprecated key
+		pod.Labels[extensions.DaemonSetTemplateGenerationKey] == fmt.Sprint(dsTemplateGeneration)
 	hashMatches := len(hash) > 0 && pod.Labels[appsv1.DefaultDaemonSetUniqueLabelKey] == hash
 	return hashMatches || templateMatches
 }

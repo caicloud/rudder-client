@@ -12,7 +12,7 @@ import (
 
 var (
 	// ErrUpdatedRevisionNotExists ...
-	ErrUpdatedRevisionNotExists = fmt.Errorf("There is no updated revision found for this resource") // TODO: 首字母不要大写；改了有什么影响？
+	ErrUpdatedRevisionNotExists = fmt.Errorf("there is no updated revision found for this resource")
 )
 
 // LongRunning ...

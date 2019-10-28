@@ -11,7 +11,8 @@ import (
 )
 
 func JudgePVC(factory listerfactory.ListerFactory, obj runtime.Object) (releaseapi.ResourceStatus, error) {
-	pvc, ok := obj.(*corev1.PersistentVolumeClaim) // TODO: 为什么只有PVC需要类型断言？
+	// ok is for stateful objects
+	pvc, ok := obj.(*corev1.PersistentVolumeClaim)
 	if !ok {
 		return releaseapi.ResourceStatusFrom(""), fmt.Errorf("unknown type for persistent volume claim: %s", obj.GetObjectKind().GroupVersionKind().String())
 	}
