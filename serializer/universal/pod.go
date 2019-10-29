@@ -18,8 +18,8 @@ type Pod struct {
 }
 
 type PodAnnotation struct {
-	Key   string      `json:"key"`
-	Value interface{} `json:"value"` // TODO: 为什么不用string？
+	Key   string `json:"key"`
+	Value string `json:"value"`
 }
 
 type PodHost struct {
