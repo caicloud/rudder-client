@@ -4,13 +4,13 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/caicloud/rudder-client/serializer/universal"
+
 	"github.com/davecgh/go-spew/spew"
 	"github.com/golang/glog"
 	appsv1beta1 "k8s.io/api/apps/v1beta1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
-
-	"github.com/caicloud/rudder-client/serializer/universal"
 )
 
 type deploymentSerializer struct{}

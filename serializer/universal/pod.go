@@ -18,8 +18,8 @@ type Pod struct {
 }
 
 type PodAnnotation struct {
-	Key   string      `json:"key"`
-	Value interface{} `json:"value"`
+	Key   string `json:"key"`
+	Value string `json:"value"`
 }
 
 type PodHost struct {
@@ -41,12 +41,12 @@ func GetPod(tmpl corev1.PodTemplateSpec) *Pod {
 			IPC:     tmpl.Spec.HostIPC,
 		},
 		HostAliases:     tmpl.Spec.HostAliases,
-		Annotations:     getPodAnnotaitions(tmpl),
-		ConsleIsMonitor: getConsleIsMonitor(tmpl),
+		Annotations:     getPodAnnotations(tmpl),
+		ConsleIsMonitor: getConsoleIsMonitor(tmpl),
 	}
 }
 
-func getConsleIsMonitor(tmpl corev1.PodTemplateSpec) *bool {
+func getConsoleIsMonitor(tmpl corev1.PodTemplateSpec) *bool {
 	if tmpl.Annotations != nil {
 		if _, ok := tmpl.Annotations["prometheus.io/scrape"]; ok {
 			return convertBoolToPointer(true)
@@ -55,7 +55,7 @@ func getConsleIsMonitor(tmpl corev1.PodTemplateSpec) *bool {
 	return convertBoolToPointer(false)
 }
 
-func getPodAnnotaitions(tmpl corev1.PodTemplateSpec) []*PodAnnotation {
+func getPodAnnotations(tmpl corev1.PodTemplateSpec) []*PodAnnotation {
 	ret := make([]*PodAnnotation, 0)
 	for k, v := range tmpl.Annotations {
 		ret = append(ret, &PodAnnotation{Key: k, Value: v})

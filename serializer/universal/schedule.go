@@ -28,11 +28,6 @@ type NodeAffinity struct {
 	Terms []interface{} `json:"terms,omitempty"`
 }
 
-type NodeAffinityTerm struct {
-	Weight        int32          `json:"weight"`
-	LabelSelector *LabelSelector `json:"selector,omitempty"`
-}
-
 type AntiAffinity struct {
 	Pod *PodAffinity `json:"pod,omitempty"`
 }

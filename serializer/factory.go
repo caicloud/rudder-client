@@ -5,17 +5,17 @@ import (
 	"fmt"
 	"sync"
 
-	"k8s.io/apimachinery/pkg/runtime/schema"
-
 	appsv1 "github.com/caicloud/rudder-client/serializer/apps/v1"
 	appsv1beta1 "github.com/caicloud/rudder-client/serializer/apps/v1beta1"
 	appsv1beta2 "github.com/caicloud/rudder-client/serializer/apps/v1beta2"
 	corev1 "github.com/caicloud/rudder-client/serializer/core/v1"
 	extensionsv1beta1 "github.com/caicloud/rudder-client/serializer/extensions/v1beta1"
 	"github.com/caicloud/rudder-client/serializer/universal"
+
+	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
-func init() {
+func init() { // TODO: use klog
 	flag.Set("logtostderr", "true")
 	flag.Set("alsologtostderr", "true")
 }

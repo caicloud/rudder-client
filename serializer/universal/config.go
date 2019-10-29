@@ -49,7 +49,7 @@ func PrepareChartConfig(chart string, cur int) (*ChartConfig, error) {
 
 	config := chconfig.Config
 	switch {
-	case config.Controllers == nil || len(config.Controllers) == 0:
+	case len(config.Controllers) == 0:
 		config.Controllers = make([]*Controller, cur+1)
 		glog.V(4).Infof("controllers are empty, which will be appended %d empty elements", cur+1)
 		glog.V(4).Infof("the object will be encoded in controllers[%d]", cur)

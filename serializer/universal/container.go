@@ -140,7 +140,7 @@ func GetContainers(pod *Pod, containers []corev1.Container, volumes []*Volume) [
 
 func convertVolumeMounts(vmounts []corev1.VolumeMount, volumes []*Volume) []VolumeMount {
 	vmap := make(map[string]*Volume)
-	for c, _ := range volumes {
+	for c := range volumes {
 		vmap[volumes[c].Name] = volumes[c]
 	}
 	ret := make([]VolumeMount, 0, len(vmounts))
@@ -286,13 +286,11 @@ func getConsoleIsLog(p *Pod, containerName string) *bool {
 			// the log file annotation is like this:
 			// logging.caicloud.io/required-logfiles: '{"files":[{"filename":"sda","logDir":"/he","container":"c0"}]}'
 			// we can judge the flag by the key format such as below
-			value, ok := anno.Value.(string)
-			if ok {
-				key := fmt.Sprintf(`"container":"%s"`, containerName)
-				index := strings.Index(value, key)
-				if index != -1 {
-					return convertBoolToPointer(true)
-				}
+			value := anno.Value
+			key := fmt.Sprintf(`"container":"%s"`, containerName)
+			index := strings.Index(value, key)
+			if index != -1 {
+				return convertBoolToPointer(true)
 			}
 			break
 		}
