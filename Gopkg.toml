@@ -26,7 +26,7 @@
 
 
 [[constraint]]
-  branch = "release-1.14"
+  branch = "release-1.14-oem-paper"
   name = "github.com/caicloud/clientset"
 
 [[constraint]]
