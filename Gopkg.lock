@@ -2,8 +2,8 @@
 
 
 [[projects]]
-  branch = "release-1.12"
-  digest = "1:17910f196da332bb4aca45f295103ecd179184b4a06bc790527eace7ad764356"
+  branch = "release-1.12-oem-unionpay"
+  digest = "1:45b7060aaa8d6c2894b41e7a031f5e8d641e146629591d32859b53dfd45d4947"
   name = "github.com/caicloud/clientset"
   packages = [
     "listerfactory",
@@ -55,7 +55,7 @@
     "util/status",
   ]
   pruneopts = "UT"
-  revision = "4871013d8051e06b0c7257170e7f531cfb29e314"
+  revision = "56bad457572aa2dc7e0b8bd5325c7c86ad6cd2cd"
 
 [[projects]]
   digest = "1:a2c1d0e43bd3baaa071d1b9ed72c27d78169b2b269f71c105ac4ba34b1be4a39"
