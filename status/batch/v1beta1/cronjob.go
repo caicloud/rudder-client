@@ -48,9 +48,18 @@ func JudgeCronJob(factory listerfactory.ListerFactory, obj runtime.Object) (rele
 }
 
 func getJobForCronJob(joblister batchlisters.JobLister, cronjob *batchv1beta1.CronJob) ([]*batchv1.Job, error) {
-	selector := labels.SelectorFromSet(cronjob.Spec.JobTemplate.Labels)
-	if selector.Empty() {
-		return nil, nil
+	var ret []*batchv1.Job
+	js, err := joblister.Jobs(cronjob.Namespace).List(labels.NewSelector())
+	if err != nil {
+		return nil, err
 	}
-	return joblister.Jobs(cronjob.Namespace).List(selector)
+	for _, job := range js {
+		for _, or := range job.GetOwnerReferences() {
+			if or.Kind == "CronJob" && or.Name == cronjob.Name {
+				ret = append(ret, job)
+				break
+			}
+		}
+	}
+	return ret, nil
 }
