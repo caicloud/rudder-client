@@ -3,7 +3,7 @@ package v1
 import (
 	"fmt"
 
-	"github.com/caicloud/clientset/listerfactory"
+	"github.com/caicloud/clientset/informers"
 	releaseapi "github.com/caicloud/clientset/pkg/apis/release/v1alpha1"
 	podstatus "github.com/caicloud/clientset/util/status"
 
@@ -14,13 +14,13 @@ import (
 )
 
 type longRunning struct {
-	factory  listerfactory.ListerFactory
-	delegate LongRunning
-	obj      runtime.Object
-	events   []*corev1.Event
+	informerFactory informers.SharedInformerFactory
+	delegate        LongRunning
+	obj             runtime.Object
+	events          []*corev1.Event
 }
 
-func newLongRunning(factory listerfactory.ListerFactory, obj runtime.Object) (*longRunning, error) {
+func newLongRunning(informerFactory informers.SharedInformerFactory, obj runtime.Object) (*longRunning, error) {
 	var delegate LongRunning
 	var namespace string
 	switch resource := obj.(type) {
@@ -37,15 +37,15 @@ func newLongRunning(factory listerfactory.ListerFactory, obj runtime.Object) (*l
 		return nil, fmt.Errorf("unsupported type for %v", resource)
 	}
 
-	events, err := factory.Core().V1().Events().Events(namespace).List(labels.Everything())
+	events, err := informerFactory.Native().Core().V1().Events().Lister().Events(namespace).List(labels.Everything())
 	if err != nil {
 		return nil, err
 	}
 	return &longRunning{
-		factory:  factory,
-		delegate: delegate,
-		obj:      obj,
-		events:   events,
+		informerFactory: informerFactory,
+		delegate:        delegate,
+		obj:             obj,
+		events:          events,
 	}, nil
 }
 
@@ -55,7 +55,7 @@ func (d *longRunning) Judge() (resStatus releaseapi.ResourceStatus, retErr error
 	predictEventsIssue, lastEvent := d.delegate.PredictEvents(d.events)
 
 	// predicts resource status from updated revision and get updated revision key
-	predictRevisionIssue, err := d.delegate.PredictUpdatedRevision(d.factory, d.events)
+	predictRevisionIssue, err := d.delegate.PredictUpdatedRevision(d.informerFactory, d.events)
 	if err != nil && err != ErrUpdatedRevisionNotExists {
 		return releaseapi.ResourceStatusFrom(""), err
 	}
@@ -106,7 +106,7 @@ func (d *longRunning) Judge() (resStatus releaseapi.ResourceStatus, retErr error
 
 func (d *longRunning) Pods() (updated, old []HyperPod, err error) {
 	// get pods
-	podList, err := getPodsFor(d.factory.Core().V1().Pods(), d.obj)
+	podList, err := getPodsFor(d.informerFactory, d.obj)
 	if err != nil {
 		return nil, nil, err
 	}

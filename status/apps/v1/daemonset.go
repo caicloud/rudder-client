@@ -7,7 +7,7 @@ import (
 	"sort"
 	"strconv"
 
-	"github.com/caicloud/clientset/listerfactory"
+	"github.com/caicloud/clientset/informers"
 	releaseapi "github.com/caicloud/clientset/pkg/apis/release/v1alpha1"
 	"github.com/caicloud/clientset/util/event"
 
@@ -16,7 +16,6 @@ import (
 	extensions "k8s.io/api/extensions/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
-	appslisters "k8s.io/client-go/listers/apps/v1"
 )
 
 var (
@@ -26,7 +25,7 @@ var (
 	}
 )
 
-func JudgeDaemonSet(factory listerfactory.ListerFactory, obj runtime.Object) (releaseapi.ResourceStatus, error) {
+func JudgeDaemonSet(informerFactory informers.SharedInformerFactory, obj runtime.Object) (releaseapi.ResourceStatus, error) {
 	daemonset, ok := obj.(*appsv1.DaemonSet)
 	if !ok {
 		return releaseapi.ResourceStatusFrom(""), fmt.Errorf("unknown type for daemonset: %s", obj.GetObjectKind().GroupVersionKind().String())
@@ -35,7 +34,7 @@ func JudgeDaemonSet(factory listerfactory.ListerFactory, obj runtime.Object) (re
 		return releaseapi.ResourceStatusFrom(""), fmt.Errorf("daemonset can not be nil")
 	}
 
-	lr, err := newLongRunning(factory, daemonset)
+	lr, err := newLongRunning(informerFactory, daemonset)
 	if err != nil {
 		return releaseapi.ResourceStatusFrom(""), err
 	}
@@ -54,10 +53,10 @@ func newDaemonSetLongRunning(daemonset *appsv1.DaemonSet) LongRunning {
 	}
 }
 
-func (d *daemonsetLongRunning) PredictUpdatedRevision(factory listerfactory.ListerFactory, events []*corev1.Event) (*releaseapi.ResourceStatus, error) {
+func (d *daemonsetLongRunning) PredictUpdatedRevision(informerFactory informers.SharedInformerFactory, events []*corev1.Event) (*releaseapi.ResourceStatus, error) {
 	daemonset := d.daemonset
 
-	historyList, err := getHistoriesForDaemonSet(factory.Apps().V1().ControllerRevisions(), daemonset)
+	historyList, err := getHistoriesForDaemonSet(informerFactory, daemonset)
 	if err != nil {
 		return nil, err
 	}
@@ -106,7 +105,7 @@ func (d *daemonsetLongRunning) DesiredReplics() int32 {
 	return d.daemonset.Status.DesiredNumberScheduled
 }
 
-func getHistoriesForDaemonSet(historyLister appslisters.ControllerRevisionLister, daemonset *appsv1.DaemonSet) ([]*appsv1.ControllerRevision, error) {
+func getHistoriesForDaemonSet(informerFactory informers.SharedInformerFactory, daemonset *appsv1.DaemonSet) ([]*appsv1.ControllerRevision, error) {
 	selector, err := metav1.LabelSelectorAsSelector(daemonset.Spec.Selector)
 	if err != nil {
 		return nil, fmt.Errorf("invalid label selector: %v", err)
@@ -116,7 +115,7 @@ func getHistoriesForDaemonSet(historyLister appslisters.ControllerRevisionLister
 		return nil, nil
 	}
 
-	return historyLister.ControllerRevisions(daemonset.Namespace).List(selector)
+	return informerFactory.Native().Apps().V1().ControllerRevisions().Lister().ControllerRevisions(daemonset.Namespace).List(selector)
 }
 
 func getUpdateHistoryForDaemonSet(daemonset *appsv1.DaemonSet, histories []*appsv1.ControllerRevision) (*appsv1.ControllerRevision, error) {

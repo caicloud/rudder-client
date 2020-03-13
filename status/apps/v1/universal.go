@@ -4,17 +4,16 @@ import (
 	"fmt"
 	"sort"
 
+	"github.com/caicloud/clientset/informers"
 	releaseapi "github.com/caicloud/clientset/pkg/apis/release/v1alpha1"
-
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/runtime"
-	corelisters "k8s.io/client-go/listers/core/v1"
 )
 
-func getPodsFor(podLister corelisters.PodLister, obj runtime.Object) ([]*corev1.Pod, error) {
+func getPodsFor(informerFactory informers.SharedInformerFactory, obj runtime.Object) ([]*corev1.Pod, error) {
 	var selector labels.Selector
 	var namespace string
 	var err error
@@ -39,7 +38,7 @@ func getPodsFor(podLister corelisters.PodLister, obj runtime.Object) ([]*corev1.
 	if selector.Empty() {
 		return nil, nil
 	}
-	return podLister.Pods(namespace).List(selector)
+	return informerFactory.Native().Core().V1().Pods().Lister().Pods(namespace).List(selector)
 }
 
 func getLatestEventFor(kind string, obj metav1.Object, events []*corev1.Event) *corev1.Event {
