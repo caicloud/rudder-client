@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/caicloud/clientset/listerfactory"
+	"github.com/caicloud/clientset/informers"
 	releaseapi "github.com/caicloud/clientset/pkg/apis/release/v1alpha1"
 
 	appsv1 "k8s.io/api/apps/v1"
@@ -12,10 +12,9 @@ import (
 	"k8s.io/apimachinery/pkg/api/equality"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
-	appslisters "k8s.io/client-go/listers/apps/v1"
 )
 
-func JudgeDeployment(factory listerfactory.ListerFactory, obj runtime.Object) (releaseapi.ResourceStatus, error) {
+func JudgeDeployment(informerFactory informers.SharedInformerFactory, obj runtime.Object) (releaseapi.ResourceStatus, error) {
 	deployment, ok := obj.(*appsv1.Deployment)
 	if !ok {
 		return releaseapi.ResourceStatusFrom(""), fmt.Errorf("unknown type for deployment: %s", obj.GetObjectKind().GroupVersionKind().String())
@@ -24,7 +23,7 @@ func JudgeDeployment(factory listerfactory.ListerFactory, obj runtime.Object) (r
 		return releaseapi.ResourceStatusFrom(""), fmt.Errorf("deployment can not be nil")
 	}
 
-	lr, err := newLongRunning(factory, deployment)
+	lr, err := newLongRunning(informerFactory, deployment)
 	if err != nil {
 		return releaseapi.ResourceStatusFrom(""), err
 	}
@@ -42,10 +41,10 @@ func newDeploymetLongRunning(deployment *appsv1.Deployment) LongRunning {
 	}
 }
 
-func (d *deploymentLongRunning) PredictUpdatedRevision(factory listerfactory.ListerFactory, events []*corev1.Event) (*releaseapi.ResourceStatus, error) {
+func (d *deploymentLongRunning) PredictUpdatedRevision(informerFactory informers.SharedInformerFactory, events []*corev1.Event) (*releaseapi.ResourceStatus, error) {
 	deployment := d.deployment
 
-	rsList, err := getReplicaSetsforDeployment(factory.Apps().V1().ReplicaSets(), deployment)
+	rsList, err := getReplicaSetsforDeployment(informerFactory, deployment)
 	if err != nil {
 		return nil, err
 	}
@@ -93,7 +92,7 @@ func (d *deploymentLongRunning) DesiredReplics() int32 {
 	return *d.deployment.Spec.Replicas
 }
 
-func getReplicaSetsforDeployment(rslister appslisters.ReplicaSetLister, deployment *appsv1.Deployment) ([]*appsv1.ReplicaSet, error) {
+func getReplicaSetsforDeployment(informerFactory informers.SharedInformerFactory, deployment *appsv1.Deployment) ([]*appsv1.ReplicaSet, error) {
 	selector, err := metav1.LabelSelectorAsSelector(deployment.Spec.Selector)
 	if err != nil {
 		return nil, fmt.Errorf("invalid label selector: %v", err)
@@ -103,7 +102,7 @@ func getReplicaSetsforDeployment(rslister appslisters.ReplicaSetLister, deployme
 		return nil, nil
 	}
 
-	rsList, err := rslister.ReplicaSets(deployment.Namespace).List(selector)
+	rsList, err := informerFactory.Native().Apps().V1().ReplicaSets().Lister().ReplicaSets(deployment.Namespace).List(selector)
 	if err != nil {
 		return nil, err
 	}

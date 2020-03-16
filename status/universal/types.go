@@ -1,7 +1,7 @@
 package universal
 
 import (
-	"github.com/caicloud/clientset/listerfactory"
+	"github.com/caicloud/clientset/informers"
 	releaseapi "github.com/caicloud/clientset/pkg/apis/release/v1alpha1"
 
 	"k8s.io/apimachinery/pkg/runtime"
@@ -9,7 +9,7 @@ import (
 )
 
 // Assistant handles a kind of object. It will generates the resourceStatus for the object.
-type Assistant func(factory listerfactory.ListerFactory, obj runtime.Object) (releaseapi.ResourceStatus, error)
+type Assistant func(informerFactory informers.SharedInformerFactory, obj runtime.Object) (releaseapi.ResourceStatus, error)
 
 // Umpire can employs many assistant to handle many kinds of objects.
 type Umpire interface {

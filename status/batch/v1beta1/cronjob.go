@@ -6,17 +6,16 @@ import (
 
 	statusbatchv1 "github.com/caicloud/rudder-client/status/batch/v1"
 
-	"github.com/caicloud/clientset/listerfactory"
+	"github.com/caicloud/clientset/informers"
 	releaseapi "github.com/caicloud/clientset/pkg/apis/release/v1alpha1"
 
 	batchv1 "k8s.io/api/batch/v1"
 	batchv1beta1 "k8s.io/api/batch/v1beta1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/runtime"
-	batchlisters "k8s.io/client-go/listers/batch/v1"
 )
 
-func JudgeCronJob(factory listerfactory.ListerFactory, obj runtime.Object) (releaseapi.ResourceStatus, error) {
+func JudgeCronJob(informerFactory informers.SharedInformerFactory, obj runtime.Object) (releaseapi.ResourceStatus, error) {
 	cronjob, ok := obj.(*batchv1beta1.CronJob)
 	if !ok {
 		return releaseapi.ResourceStatusFrom(""), fmt.Errorf("unknown type for CronJob: %s", obj.GetObjectKind().GroupVersionKind().String())
@@ -31,7 +30,7 @@ func JudgeCronJob(factory listerfactory.ListerFactory, obj runtime.Object) (rele
 			Message: fmt.Sprintf("there are %v jobs are running", len(cronjob.Status.Active)),
 		}, nil
 	}
-	jobList, err := getJobForCronJob(factory.Batch().V1().Jobs(), cronjob)
+	jobList, err := getJobForCronJob(informerFactory, cronjob)
 	if err != nil {
 		return releaseapi.ResourceStatusFrom(""), err
 	}
@@ -44,12 +43,12 @@ func JudgeCronJob(factory listerfactory.ListerFactory, obj runtime.Object) (rele
 		return jobList[i].CreationTimestamp.After(jobList[j].CreationTimestamp.Time)
 	})
 
-	return statusbatchv1.JudgeJob(factory, jobList[0])
+	return statusbatchv1.JudgeJob(informerFactory, jobList[0])
 }
 
-func getJobForCronJob(joblister batchlisters.JobLister, cronjob *batchv1beta1.CronJob) ([]*batchv1.Job, error) {
+func getJobForCronJob(informerFactory informers.SharedInformerFactory, cronjob *batchv1beta1.CronJob) ([]*batchv1.Job, error) {
 	var ret []*batchv1.Job
-	js, err := joblister.Jobs(cronjob.Namespace).List(labels.NewSelector())
+	js, err := informerFactory.Native().Batch().V1().Jobs().Lister().Jobs(cronjob.Namespace).List(labels.NewSelector())
 	if err != nil {
 		return nil, err
 	}

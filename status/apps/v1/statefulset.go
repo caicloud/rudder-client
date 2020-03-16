@@ -3,7 +3,7 @@ package v1
 import (
 	"fmt"
 
-	"github.com/caicloud/clientset/listerfactory"
+	"github.com/caicloud/clientset/informers"
 	releaseapi "github.com/caicloud/clientset/pkg/apis/release/v1alpha1"
 	"github.com/caicloud/clientset/util/event"
 
@@ -19,7 +19,7 @@ var (
 	}
 )
 
-func JudgeStatefulSet(factory listerfactory.ListerFactory, obj runtime.Object) (releaseapi.ResourceStatus, error) {
+func JudgeStatefulSet(informerFactory informers.SharedInformerFactory, obj runtime.Object) (releaseapi.ResourceStatus, error) {
 	statefulset, ok := obj.(*appsv1.StatefulSet)
 	if !ok {
 		return releaseapi.ResourceStatusFrom(""), fmt.Errorf("unknown type for statefulset: %s", obj.GetObjectKind().GroupVersionKind().String())
@@ -28,7 +28,7 @@ func JudgeStatefulSet(factory listerfactory.ListerFactory, obj runtime.Object) (
 		return releaseapi.ResourceStatusFrom(""), fmt.Errorf("statefulset can not be nil")
 	}
 
-	lr, err := newLongRunning(factory, statefulset)
+	lr, err := newLongRunning(informerFactory, statefulset)
 	if err != nil {
 		return releaseapi.ResourceStatusFrom(""), err
 	}
@@ -46,7 +46,7 @@ func newStatefulSetLongRunning(statefulset *appsv1.StatefulSet) LongRunning {
 	}
 }
 
-func (d *statefulsetLongRunning) PredictUpdatedRevision(factory listerfactory.ListerFactory, events []*corev1.Event) (*releaseapi.ResourceStatus, error) {
+func (d *statefulsetLongRunning) PredictUpdatedRevision(informerFactory informers.SharedInformerFactory, events []*corev1.Event) (*releaseapi.ResourceStatus, error) {
 	statefulset := d.statefulset
 	d.updatedRevision = statefulset.Status.UpdateRevision
 	if d.updatedRevision == "" {

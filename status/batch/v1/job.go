@@ -3,7 +3,7 @@ package v1
 import (
 	"fmt"
 
-	"github.com/caicloud/clientset/listerfactory"
+	"github.com/caicloud/clientset/informers"
 	releaseapi "github.com/caicloud/clientset/pkg/apis/release/v1alpha1"
 
 	batchv1 "k8s.io/api/batch/v1"
@@ -11,7 +11,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
-func JudgeJob(factory listerfactory.ListerFactory, obj runtime.Object) (releaseapi.ResourceStatus, error) {
+func JudgeJob(informerFactory informers.SharedInformerFactory, obj runtime.Object) (releaseapi.ResourceStatus, error) {
 	job, ok := obj.(*batchv1.Job)
 	if !ok {
 		return releaseapi.ResourceStatusFrom(""), fmt.Errorf("unknown type for Job: %s", obj.GetObjectKind().GroupVersionKind().String())
